@@ -14,4 +14,6 @@
 
 - https://velog.io/@picks5/macOS%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9-%EA%B0%80%EB%8A%A5%ED%95%9C-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-%EB%AA%85%EB%A0%81%EC%96%B4
 
+- https://velog.io/@picks5/curl-%EB%AA%85%EB%A0%B9%EC%96%B4%EC%99%80-%EA%B0%84%EB%8B%A8%ED%95%9C-CRUD
+
 ### 홈 게이트웨이 리뷰
