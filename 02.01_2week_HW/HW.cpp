@@ -87,7 +87,7 @@ int main() {
 
             //메인 페이지
             if(strstr(buf, "GET / HTTP/1.1") != NULL){
-                std::string indexContent = readFile("index.html");
+                std::string indexContent = readFile("./html/index.html");
                 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
                 response += indexContent;
                 strcpy(buf, response.c_str());
@@ -95,7 +95,7 @@ int main() {
 
            //page.html 파일 읽고 출력
             if (strstr(buf, "GET /page HTTP/1.1") != NULL) {
-                std::string indexContent = readFile("page.html");
+                std::string indexContent = readFile("./html/page.html");
                 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
                 response += indexContent;
                 strcpy(buf, response.c_str());
@@ -103,7 +103,7 @@ int main() {
 
             //에러 페이지
             if (strstr(buf, "GET /error HTTP/1.1") != NULL) {
-                std::string indexContent = readFile("api.json");
+                std::string indexContent = readFile("./json/api.json");
                 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/json\r\n\r\n";
                 response += indexContent;
                 strcpy(buf, response.c_str());
@@ -112,12 +112,12 @@ int main() {
             //사원 전체 조회
             if (strstr(buf, "GET /member HTTP/1.1") != NULL) {  
                 if (strstr(buf, "Cookie: id=admin11") != NULL) {
-                    std::string indexContent = readFile("member.json");
+                    std::string indexContent = readFile("./json/member.json");
                     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/json\r\n\r\n";
                     response += indexContent;
                     strcpy(buf, response.c_str());
                 }else{
-                    std::string indexContent = readFile("emtpyCookie.json");
+                    std::string indexContent = readFile("./json/emtpyCookie.json");
                     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/json\r\n\r\n";
                     response += indexContent;
                     strcpy(buf, response.c_str());
