@@ -3,7 +3,6 @@
 #include <fstream>
 
 
-//파일 읽기
 std::string readFile(const std::string& filename) {
     std::ifstream file(filename);
     std::stringstream buffer;
@@ -12,19 +11,13 @@ std::string readFile(const std::string& filename) {
 }
 
 int main() {
-    // Blocking Socket
-    // accept (접속한 클라이언트가 있으면)
-    // -> connect (클라이언트가 접속에 성공하면)
-    // -> send/sendto (클라이언트/서버가 데이터를 송신버퍼에 복사하면)
-    // -> recv/recvfrom (클라이언트/서버가 데이터를 수신버퍼에서 복사해옴)
-    // Non-blocking Socket
+
     int servsock = socket(AF_INET, SOCK_STREAM, 0);
     if (servsock == INVALID_SOCKET) {
         cout << "socket() error" << endl;
         return 0;
     }
 
-    // 논블로킹 소켓으로 만들기
     int flags = fcntl(servsock, F_GETFL, 0);
     fcntl(servsock, F_SETFL, flags | O_NONBLOCK);
 
@@ -49,10 +42,7 @@ int main() {
         uint addrlen = sizeof(cliaddr);
         int clisock = accept(servsock, (sockaddr*)&cliaddr, &addrlen);
         if (clisock == INVALID_SOCKET) {
-            // 블로킹 일때는 바로 문제가 되지만,
-            // cout << "accept() error" << endl;
-            // return 0;
-            // 논블로킹 일때는 한번 더 확인해야 한다
+
             if (errno == EWOULDBLOCK) {
                 continue;
             }
@@ -68,11 +58,10 @@ int main() {
 
         while (true) {
             int recvlen;
-            // 논블로킹 소켓은 send()도 루프를 돌면서 될 때까지 계속 시도해야함
+
             while (true) {
                 recvlen = recv(clisock, buf, sizeof(buf), 0);
                 if (recvlen == SOCKET_ERROR) {
-                    // 논블로킹 소켓은 recv()에서 한번 더 체크해줘야함
                     if (errno == EINPROGRESS || errno == EWOULDBLOCK) {
                         continue;
                     }
@@ -86,17 +75,16 @@ int main() {
                 }
             }
 
-            if (recvlen == 0) { // 클라이언트가 접속을 끊었으면
-                close(clisock); // 소켓을 닫고
+            if (recvlen == 0) {
+                close(clisock);
                 cout << "Client Disconnected" << endl;
-                break; // 루프를 빠져나가서 다음 클라이언트를 받는다
+                break;
             }
 
             buf[recvlen] = '\0';
 
             cout << "Recv: " << buf << endl;
 
-            
             //메인 페이지
             if(strstr(buf, "GET / HTTP/1.1") != NULL){
                 std::string indexContent = readFile("index.html");
@@ -105,8 +93,7 @@ int main() {
                 strcpy(buf, response.c_str());
             }
 
-        
-           //html 파일 읽어서 보내기
+           //page.html 파일 읽고 출력
             if (strstr(buf, "GET /page HTTP/1.1") != NULL) {
                 std::string indexContent = readFile("page.html");
                 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
@@ -114,7 +101,6 @@ int main() {
                 strcpy(buf, response.c_str());
             }
 
-            
             //에러 페이지
             if (strstr(buf, "GET /error HTTP/1.1") != NULL) {
                 std::string indexContent = readFile("api.json");
@@ -123,7 +109,6 @@ int main() {
                 strcpy(buf, response.c_str());
             }
 
-            
             //사원 전체 조회
             if (strstr(buf, "GET /member HTTP/1.1") != NULL) {  
                 if (strstr(buf, "Cookie: id=admin11") != NULL) {
@@ -139,34 +124,29 @@ int main() {
                 }
             }
 
-            
             //로그인
             if (strstr(buf, "GET /cookie HTTP/1.1") != NULL) {  
                 strcpy(buf, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nSet-Cookie: id=admin11\r\n\r\n<p>Login Success</p>");
             }
 
-            
             //로그아웃
             if (strstr(buf, "GET /logout HTTP/1.1") != NULL) {  
                 strcpy(buf, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nSet-Cookie: id=\r\n\r\n<p>Logout Success</p>");
             }
 
-            
             //포스트
             if (strstr(buf, "POST /post HTTP/1.1") != NULL) {  
+                //요청 받은 값을 output.txt에 저장
                 string line;
                 ofstream file("output.txt");
                 file << buf;
                 file.close();
-                //요청이 오면 응답하기  
                 strcpy(buf, "HTTP/1.1 200 OK\r\nContent-Type: text/json\r\n\r\n{\"result\":\"success\"}");
             }
 
             int sendlen;
-            
             sendlen = send(clisock, buf, strlen(buf) + 1, 0);
             if (sendlen == SOCKET_ERROR) {
-                // 논블로킹 소켓은 send()에서 한번 더 체크해줘야함
                 if (errno == EINPROGRESS || errno == EWOULDBLOCK) {
                     continue;
                 }else {
@@ -177,15 +157,14 @@ int main() {
                 break;
             }
 
-            if (sendlen == 0) { // 클라이언트가 접속을 끊었으면
-                close(clisock); // 소켓을 닫고
+            if (sendlen == 0) {
+                close(clisock);
                 cout << "Client Disconnected" << endl;
-                break; // 루프를 빠져나가서 다음 클라이언트를 받는다
+                break;
             }
         }
     }
 
-    // 소켓 종료
     close(servsock);
     return 0;
-} // 논블로킹 + 동기 방식은 상당히 많은 루프를 필요로 하기 때문에 비효율적이다
+}
