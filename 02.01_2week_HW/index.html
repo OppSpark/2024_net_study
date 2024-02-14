@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HW#2</title>
+</head>
+
+<body>
+    <h1>main</h1>
+    <ul>
+        <li><a href="/page">my page</a></li>
+        <li><a href="/cookie">sign in</a></li>
+        <li><a href="/logout">sign out</a></li>
+        <li><a href="/error">error page</a></li>
+    </ul>
+    <div>
+        <h2>사원 전체 조회</h2>
+        <button onclick="location.href='/member';">전체 조회</button>
+    </div>
+    <div name ="SearchBox">
+        <h2>사원 번호로 검색</h2>
+        <form action="">
+            <p>사원 번호를 입력하세요</p>
+            <input type="number" id="EmployeeNumber" placeholder="사원 번호" required>
+            <button onclick="SearchID();return false;" required>검색</button>
+        </form>
+    </div>
+</body>
+
+<script>
+    function SearchID() {
+        const EmployeeNumber = document.getElementById('EmployeeNumber').value;
+        console.log(EmployeeNumber);
+        location.href = "/member/" + EmployeeNumber;
+    }
+</script>
+
+</html>
