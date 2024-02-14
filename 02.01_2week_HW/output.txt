@@ -1,0 +1,19 @@
+POST /post HTTP/1.1
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.36.1
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: 068499f5-bddb-409b-914b-6c5d11e357b9
+Host: 100.115.5.64:12345
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 133
+Cookie: id=
+
+{
+    "MemberId":"9",
+    "EmployeeNumber" : "3678",
+    "DeveloperSkillType":"BACK_END",
+    "Age":"22",
+    "MemberName":"HanJun"
+}

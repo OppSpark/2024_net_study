@@ -56,7 +56,7 @@ int main() {
 
         char buf[1024] = "";
 
-        while (true) {
+        // while (true) {
             int recvlen;
 
             while (true) {
@@ -144,25 +144,24 @@ int main() {
                 strcpy(buf, "HTTP/1.1 200 OK\r\nContent-Type: text/json\r\n\r\n{\"result\":\"success\"}");
             }
 
-            int sendlen;
-            sendlen = send(clisock, buf, strlen(buf) + 1, 0);
-            if (sendlen == SOCKET_ERROR) {
-                if (errno == EINPROGRESS || errno == EWOULDBLOCK) {
-                    continue;
+            while(true){
+                int sendlen;
+                sendlen = send(clisock, buf, strlen(buf) + 1, 0);
+                if (sendlen == SOCKET_ERROR) {
+                    if (errno == EINPROGRESS || errno == EWOULDBLOCK) {
+                        continue;
+                    }else {
+                        cout << "send() error" << endl;
+                        return 0;
+                    }
                 }else {
-                    cout << "send() error" << endl;
-                    return 0;
+                    break;
                 }
-            }else {
-                break;
             }
 
-            if (sendlen == 0) {
-                close(clisock);
-                cout << "Client Disconnected" << endl;
-                break;
-            }
-        }
+        close(clisock);
+        cout << "Client Disconnected" << endl;
+        continue;
     }
 
     close(servsock);
