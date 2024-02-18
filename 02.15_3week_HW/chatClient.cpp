@@ -41,10 +41,6 @@ int main() {
     cout << "IP를 입력하세요: ";
     cin >> ip;
     cout << "====================================" << endl;
-<<<<<<< HEAD
-=======
-    cin.ignore(); // 버퍼를 비워줌
->>>>>>> bd28be71fc6c1f3b2a3044ca97620b5a66ce6f91
 
     sockaddr_in servAddr;
     memset(&servAddr, 0, sizeof(servAddr));
