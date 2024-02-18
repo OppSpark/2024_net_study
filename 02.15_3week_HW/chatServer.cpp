@@ -1,5 +1,4 @@
 #include "lib.h"
-
 #define DEFAULT_BUFLEN 1024
 #define MAX_EVENTS 100
 
@@ -7,7 +6,7 @@ struct Session {
     int sock = INVALID_SOCKET;
     char buf[DEFAULT_BUFLEN];
     int recvbytes = 0;
-    int sendbytes = 0;
+    int sendbytes = 0; 
 };
 
 int main() {
@@ -47,10 +46,11 @@ int main() {
         return 1;
     }
 
-    epoll_event epEvents[MAX_EVENTS], epEvent; 
+    epoll_event epEvents[MAX_EVENTS], epEvent;
+
     epEvent.events = EPOLLIN;
     epEvent.data.fd = servsock;
-
+    
     if (epoll_ctl(epollfd, EPOLL_CTL_ADD, servsock, &epEvent) == SOCKET_ERROR) {
         cout << "epoll_ctl() error" << endl;
         return 1;
@@ -58,7 +58,7 @@ int main() {
 
     while (true) {
         int epfds = epoll_wait(epollfd, epEvents, MAX_EVENTS, INFINITE);
-        if (epfds == SOCKET_ERROR) { 
+        if (epfds == SOCKET_ERROR) {
             cout << "epoll_wait() error" << endl;
             break;
         }
@@ -68,7 +68,7 @@ int main() {
                 sockaddr_in cliaddr;
                 socklen_t addrlen = sizeof(cliaddr);
 
-                int clisock = accept(servsock, (sockaddr*)&cliaddr, &addrlen); 
+                int clisock = accept(servsock, (sockaddr*)&cliaddr, &addrlen);
                 if (clisock == INVALID_SOCKET) { 
                     cout << "accept() error" << endl;
                     break;
@@ -88,20 +88,20 @@ int main() {
                 }
 
                 sessions.push_back(newSession);
+                
                 cout << "====================================" << endl;
                 cout << "Client Connected" << endl;
                 cout << "클라이언트 번호 : " << clisock << endl;
                 cout << "현제 연결된 세션 크기 : " << sessions.size() << endl;
-
                 continue;
             }
 
             Session* session = (Session*)epEvents[i].data.ptr;
 
             if (epEvents[i].events & EPOLLIN) {
-                int recvbytes = recv(session->sock, session->buf, DEFAULT_BUFLEN, 0); // 데이터 수신
-                if (recvbytes == SOCKET_ERROR) { 
-                    if (errno == EWOULDBLOCK) continue; 
+                int recvbytes = recv(session->sock, session->buf, DEFAULT_BUFLEN, 0);
+                if (recvbytes == SOCKET_ERROR) {
+                    if (errno == EWOULDBLOCK) continue;
                     cout << "recv() error" << endl;
                     break;
                 }
@@ -120,11 +120,10 @@ int main() {
                 cout << "====================================" << endl;
                 cout << "클라이언트 번호 : " << session->sock  << endl;
                 cout << "내용 : " << session->buf << endl;
-
-                for(int j = 0; j < sessions.size(); j++) {
-                    if (sessions[j]->sock == servsock) continue;
-                    send(sessions[j]->sock, session->buf, recvbytes, 0);
                 
+                for(int j = 0; j < sessions.size(); j++) {
+                    if (sessions[j]->sock == servsock) continue;   
+                    send(sessions[j]->sock, session->buf, recvbytes, 0);
                 }
             }
         }
