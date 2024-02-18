@@ -1,6 +1,34 @@
 #include "lib.h"
+#include <thread>
 
-int main () {
+void sendt(int clisock) {
+    while (true) {
+        char buf[1024];
+        cout << "내용을 입력하세요: ";
+        cin >> buf;
+
+        int sendlen = send(clisock, buf, strlen(buf) + 1, 0);
+        if (sendlen == SOCKET_ERROR) {
+            cout << "send() error" << endl;
+            break;
+        }
+    }
+}
+
+void recvt(int clisock) {
+    while (true) {
+        char buf[1024];
+        int recvlen = recv(clisock, buf, sizeof(buf), 0);
+        if (recvlen == SOCKET_ERROR) {
+            cout << "recv() error" << endl;
+            break;
+        }
+        buf[recvlen] = '\0';
+        cout << "답변: " << buf << endl;
+    }
+}
+
+int main() {
     int clisock = socket(AF_INET, SOCK_STREAM, 0);
     if (clisock == INVALID_SOCKET) {
         cout << "socket() error" << endl;
@@ -8,7 +36,8 @@ int main () {
     }
 
     char ip[16];
-    cout << "Input server IP: "; cin >> ip;
+    cout << "Input server IP: ";
+    cin >> ip;
 
     sockaddr_in servAddr;
     memset(&servAddr, 0, sizeof(servAddr));
@@ -21,40 +50,13 @@ int main () {
         return 0;
     }
 
-    while (true) {
-        char buf[1024];
-        cout << "Input: "; cin >> buf;
+    // 스레드 생성 및 실행
+    std::thread send(sendt, clisock);
+    std::thread recv(recvt, clisock);
 
-
-        int sendlen = send(clisock, buf, strlen(buf) + 1, 0);
-        if (sendlen == SOCKET_ERROR) {
-            cout << "send() error" << endl;
-            return 0;
-        }
-
-        while(true){
-            int recvlen = recv(clisock, buf, sizeof(buf), 0);
-            if (recvlen == SOCKET_ERROR) {
-                cout << "recv() error" << endl;
-                return 0;
-            }
-            else if(recvlen == 0){
-                break;
-            }
-            buf[recvlen] = '\0';
-            cout << "Echo: " << buf << endl;
-        }
-        /*
-        int recvlen = recv(clisock, buf, sizeof(buf), 0);
-        if (recvlen == SOCKET_ERROR) {
-            cout << "recv() error" << endl;
-            return 0;
-        }
-        buf[recvlen] = '\0';
-
-        cout << "Echo: " << buf << endl;
-        */
-    }
+    // 메인 스레드가 종료될 때까지 대기
+    send.join();
+    recv.join();
 
     // 소켓 종료
     close(clisock);
