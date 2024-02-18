@@ -5,7 +5,8 @@ void sendt(int clisock) {
     while (true) {
         char buf[1024];
         cout << "내용을 입력하세요: ";
-        cin >> buf;
+        cin.getline(buf, sizeof(buf));
+        cout << "====================================" << endl;
 
         int sendlen = send(clisock, buf, strlen(buf) + 1, 0);
         if (sendlen == SOCKET_ERROR) {
@@ -25,6 +26,8 @@ void recvt(int clisock) {
         }
         buf[recvlen] = '\0';
         cout << "답변: " << buf << endl;
+        cin.getline(buf, sizeof(buf));
+        cout << "====================================" << endl;
     }
 }
 
@@ -36,9 +39,9 @@ int main() {
     }
 
     char ip[16];
-    cout << "Input server IP: ";
+    cout << "IP를 입력하세요: ";
     cin >> ip;
-
+    cout << "====================================" << endl;
     sockaddr_in servAddr;
     memset(&servAddr, 0, sizeof(servAddr));
     servAddr.sin_family = AF_INET;
@@ -50,15 +53,12 @@ int main() {
         return 0;
     }
 
-    // 스레드 생성 및 실행
     std::thread send(sendt, clisock);
     std::thread recv(recvt, clisock);
 
-    // 메인 스레드가 종료될 때까지 대기
     send.join();
     recv.join();
 
-    // 소켓 종료
     close(clisock);
     return 0;
 }
