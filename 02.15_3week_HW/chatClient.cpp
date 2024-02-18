@@ -5,10 +5,9 @@ void sendt(int clisock) {
     while (true) {
         char buf[1024];
         cout << "내용을 입력하세요: ";
-        cin.getline(buf, sizeof(buf));
         cout << "====================================" << endl;
 
-        int sendlen = send(clisock, buf, strlen(buf) + 1, 0);
+        ssize_t sendlen = send(clisock, buf, strlen(buf) + 1, 0);
         if (sendlen == SOCKET_ERROR) {
             cout << "send() error" << endl;
             break;
@@ -19,14 +18,13 @@ void sendt(int clisock) {
 void recvt(int clisock) {
     while (true) {
         char buf[1024];
-        int recvlen = recv(clisock, buf, sizeof(buf), 0);
+        ssize_t recvlen = recv(clisock, buf, sizeof(buf), 0);
         if (recvlen == SOCKET_ERROR) {
             cout << "recv() error" << endl;
             break;
         }
         buf[recvlen] = '\0';
-        cout << "답변: " << buf << endl;
-        cin.getline(buf, sizeof(buf));
+        cout << "답장: " << buf << endl;
         cout << "====================================" << endl;
     }
 }
@@ -42,6 +40,8 @@ int main() {
     cout << "IP를 입력하세요: ";
     cin >> ip;
     cout << "====================================" << endl;
+    cin.ignore(); // 버퍼를 비워줌
+
     sockaddr_in servAddr;
     memset(&servAddr, 0, sizeof(servAddr));
     servAddr.sin_family = AF_INET;

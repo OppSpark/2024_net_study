@@ -123,6 +123,7 @@ int main() {
                 
                 for(int j = 0; j < sessions.size(); j++) {
                     if (sessions[j]->sock == servsock) continue;   
+                    if(sessions[j]->sock == session->sock) continue;
                     send(sessions[j]->sock, session->buf, recvbytes, 0);
                 }
             }
