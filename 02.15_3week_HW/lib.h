@@ -7,8 +7,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/epoll.h>
+#include <netinet/tcp.h>x
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstring>
